@@ -11,7 +11,7 @@
 #include <sched.h>
 #include <stdint.h>
 #include "spinlock.h"
-
+#include "common.h"
 
 __weak void __lock(struct spinlock *spinlock){
     assert(spinlock);

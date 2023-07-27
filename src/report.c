@@ -10,7 +10,6 @@
 /* Includes --------------------------------------------------------------------------------*/
 #include "internal.h"
 #include "vertex.h"
-#include <assert.h>
 
 static void reportInfo(const char *prefix, vertex_t *v);
 

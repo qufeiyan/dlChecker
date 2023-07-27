@@ -10,8 +10,6 @@
  */
 
 /* Includes --------------------------------------------------------------------------------*/
-#include "lfqueue.h"
-#include "dlcDef.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -19,6 +17,8 @@
 #include <stddef.h>
 #include <unistd.h>
 #include "common.h"
+#include "lfqueue.h"
+#include "dlcDef.h"
 
 
 #define lfqueueAssert(expression) do{                 \

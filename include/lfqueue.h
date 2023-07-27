@@ -11,11 +11,11 @@
 #ifndef LFQUEUE_H
 #define LFQUEUE_H
 /* Include ---------------------------------------------------------------------------------*/
-#include "common.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include "dlcDef.h"
+#include "common.h"
 
 #ifdef __cplusplus
 extern "C" {

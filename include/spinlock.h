@@ -11,8 +11,8 @@
 #ifndef SPINLOCK_H
 #define SPINLOCK_H
 /* Include ---------------------------------------------------------------------------------*/
-#include "dlcDef.h"
 #include <stdatomic.h>
+#include "dlcDef.h"
 
 #ifdef __cplusplus
 extern "C" {

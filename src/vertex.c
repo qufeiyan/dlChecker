@@ -8,11 +8,10 @@
  */
 
 /* Includes --------------------------------------------------------------------------------*/
-
-#include "common.h"
-#include "mempool.h"
 #include <string.h>
 #include "vertex.h"
+#include "common.h"
+#include "mempool.h"
 
 
 /*--------------------internal methods --------------------*/

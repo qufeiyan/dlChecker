@@ -8,17 +8,14 @@
  */
 
 /* Includes --------------------------------------------------------------------------------*/
-
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include "common.h"
 #include "dlcDef.h"
 #include "internal.h"
 #include "mempool.h"
 #include "vertex.h"
-#include <bits/types/stack_t.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 typedef int eventError_t;
 

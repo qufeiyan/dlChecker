@@ -11,9 +11,10 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 /* Include ---------------------------------------------------------------------------------*/
-#include "common.h"
 #include <stdbool.h>
 #include <stddef.h>
+#include "common.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

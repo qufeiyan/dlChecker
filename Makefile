@@ -13,8 +13,8 @@ $(warning "gcc: $(CC)")
 $(warning "ar: $(AR)")
 
 CFLAGS += -g -fno-omit-frame-pointer -O0 -fdiagnostics-color=always 
-LFLAGS += -lpthread -ldl -L.
-IFLAGS += -I./include/
+LFLAGS += -lpthread -ldl -L. 
+IFLAGS += -I./include/ -I.
 # DFLAGS += -DUSER_BACKTRACE
 CFLAGS += -funwind-tables 
 # DFLAGS += -DDLC_TEST
@@ -35,7 +35,7 @@ EXCLUDE = test.c demo.c
 # SRC = *.c
 
 SRCS = $(filter-out $(EXCLUDE), $(NODIR_SRCS))
-OBJS= $(patsubst %.c, %.o, $(SRCS))
+OBJS = $(patsubst %.c, %.o, $(SRCS))
 
 LIB_NAME = dlChecker
 LIB := lib${LIB_NAME}.a

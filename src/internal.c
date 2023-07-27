@@ -8,10 +8,10 @@
  */
 
 /* Includes --------------------------------------------------------------------------------*/
+#include <stdatomic.h>
 #include "internal.h"
 #include "common.h"
 #include "mempool.h"
-#include <stdatomic.h>
 
 
 hashMap_t *eventQueueMap = NULL;

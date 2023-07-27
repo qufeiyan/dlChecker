@@ -1,17 +1,18 @@
 #ifndef __APPLE__
 #define _GNU_SOURCE
-#include "dlcDef.h"
-#include "internal.h"
 #include <pthread.h>
 #include <stddef.h>
 #include <sys/prctl.h>
 #endif
-#include "common.h"
-#include "interface.h"
 #include <dlfcn.h>
 #include <string.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#include "common.h"
+#include "interface.h"
+#include "dlcDef.h"
+#include "internal.h"
+
 
 extern __thread dispatcher_t dispatcher;
 

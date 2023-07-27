@@ -8,12 +8,12 @@
  */
 
 /* Includes --------------------------------------------------------------------------------*/
-#include "mempool.h"
-#include "dlcDef.h"
-#include "internal.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include "mempool.h"
+#include "dlcDef.h"
+#include "internal.h"
 
 
 struct memPool{

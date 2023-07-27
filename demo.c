@@ -1,12 +1,10 @@
-#include "interface.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include "common.h"
 #include "internal.h"
-
-#define STRCON(variable, i)  variable##i
+#include "interface.h"
 
 volatile long long start;
 
