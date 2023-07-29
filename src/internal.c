@@ -12,6 +12,7 @@
 #include "internal.h"
 #include "common.h"
 #include "mempool.h"
+#include "spinlock.h"
 
 
 hashMap_t *eventQueueMap = NULL;
@@ -19,8 +20,9 @@ hashMap_t *requestThreadMap = NULL;
 hashMap_t *vertexThreadMap = NULL;
 hashMap_t *vertexMutexMap = NULL;
 memPool_t *eventQueueMemPool = NULL, *eventQueueBufferMemPool = NULL;
-spinlock_t eventQueueMemPoolLock, eventQueueBufferMemPoolLock;
-spinlock_t eventQueueMapLock;
+spinlock_t eventQueueMemPoolLock = {.lock = ATOMIC_FLAG_INIT};
+spinlock_t eventQueueBufferMemPoolLock = {.lock = ATOMIC_FLAG_INIT};
+spinlock_t eventQueueMapLock = {.lock = ATOMIC_FLAG_INIT};
 
 atomic_long atomicThreadCounts = 0;
 
@@ -97,44 +99,6 @@ void memPoolAllInit(){
 }
 
 
-
-// /**
-//  * @brief   initialise all the message queue.
- 
-//  * @param   mqs is the pointer of array of message queues.
-//  * @param   nums is the size of array.
-//  * @return  
-//  * @note    
-//  * @see     
-//  */
-// void initALLMessageQueues(MessageQueue **mqs, size_t nums){
-//     memPool_t *messageQueueMemPool;
-//     int i;
-
-//     assert(mqs != NULL);
-//     assert(nums <= NUMS_MAX_THREAD);
-
-//     messageQueueMemPool = memPoolDefine("messagequeue", 
-//         nums, sizeof(MessageQueue));
-
-//     for (i = 0; i < nums; ++i) {
-//         mqs[i] = (MessageQueue *)memPoolAlloc(messageQueueMemPool);
-//     }
-// }
-
-// MessageQueue *getMessageQueue(MessageQueue **mqs){
-//     int idx;
-    
-//     assert(mqs != NULL);
-
-//     do{
-//         idx = idxMsgQueue; //! old index.
-//     }while(CAS(idxMsgQueue, idx, idx + 1) != TRUE);
-
-//     assert(idxMsgQueue < NUMS_MAX_THREAD);
-
-//     return mqs[idx + 1];
-// }
 
 // #include <sys/sysinfo.h>
 // int ncoresGet(){

@@ -54,8 +54,8 @@ static inline uint32_t lfqueueAvail(lfqueue_t *queue){
 
 static inline void lfqueuePrint(lfqueue_t *queue){
     fprintf(stderr, "\n-----------------lfqueue info------------------\n");
-    fprintf(stderr, "size \t esize \t in \t out\t\n");
-    fprintf(stderr, "%d \t %d \t %d\t %d\t\n", queue->size, 
+    fprintf(stderr, "buffer \t size \t esize \t in \t out\t\n");
+    fprintf(stderr, "%p \t %d \t %d \t %d\t %d\t\n", queue->buffer, queue->size, 
         queue->esize, queue->in, queue->out);
 }
 

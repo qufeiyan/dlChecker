@@ -65,6 +65,7 @@ static void reportInfo(const char *prefix, vertex_t *v){
         mi = (mutexInfo_t *)v->private;
         assert(v->arcList.tail);
         ti = (threadInfo_t *)v->arcList.tail->private;
+        fprintf(stderr, "%s Thread # [%ld %s]:\n", prefix, ti->tid, ti->name);
         fprintf(stderr, "%s  \t holds the lock #%p [%p %p %p %p %p]\n", 
             prefix, (void *)mi->mid, ti->backtrace[0], ti->backtrace[1], 
             ti->backtrace[2], ti->backtrace[3], ti->backtrace[4]);

@@ -43,7 +43,7 @@
 
 #define LOG_COLOR_NONE       "\x1B[0;m"
 #define LOG_COLOR_RED        "\x1B[4;91m"
-#define LOG_COLOR_GREEN      "\x1B[1;92m"
+#define LOG_COLOR_GREEN      "\x1B[2;92m"
 #define LOG_COLOR_YELLOW     "\x1B[2;93m"
 #define LOG_COLOR_BLUE       "\x1B[0;94m"
 #define LOG_COLOR_MAGENTA    "\x1B[4;95m"

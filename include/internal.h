@@ -71,13 +71,10 @@ struct dispatcher{
 typedef struct HASH_MAP hashMap_t;
 typedef struct ENTRY_INFO entry_t;
 typedef struct HASH_MAP_ITERATOR hashMapIterator_t;
-
 typedef struct dispatcher dispatcher_t;
 
 extern __thread dispatcher_t dispatcher; //! define thread local dispatcher for each thread.
-
 extern hashMap_t *eventQueueMap;  //! record all eventqueue for each thread.
-
 extern hashMap_t *vertexThreadMap, *vertexMutexMap;
 extern hashMap_t *requestThreadMap;
 
@@ -164,12 +161,39 @@ extern spinlock_t eventQueueMemPoolLock, eventQueueBufferMemPoolLock;
 extern atomic_long atomicThreadCounts;
 extern spinlock_t eventQueueMapLock;
 
-
 //! initial function.
 void mapAllInit();
 void memPoolAllInit();
 void dispatcherInit(dispatcher_t *dispatch);
 long long timeInMilliseconds(void);
+
+#ifdef LOG_COLOR_OPEN   
+#define LOG_COLOR_START  LOG_COLOR_GREEN
+#define LOG_COLOR_END    LOG_COLOR_NONE
+#else
+#define LOG_COLOR_START 
+#define LOG_COLOR_END    
+#endif
+static inline void eventQueuesInfo(){
+    hashMapIterator_t iter;
+    entry_t *entry;
+    long tc;
+    eventQueue_t *eq;
+    assert(eventQueueMap);
+
+    hashMapIteratorInit(&iter, eventQueueMap); 
+    fprintf(stderr, LOG_COLOR_START "\n--->>--------Event Queue Map, size: %d, total threads: %ld--------<<---\n" \
+        LOG_COLOR_END, eventQueueMap->size, atomicThreadCounts);
+    fprintf(stderr, LOG_COLOR_START "%3s \t %20s \t %20s \t %5s \t %5s \t %5s \t %5s\n" \
+        LOG_COLOR_END, "tc", "queue", "buffer", "size", "esize", "in", "out");
+    while((entry = hashMapNext(&iter)) != NULL){  
+        tc = (long)entry->key;
+        eq = entry->value;
+        fprintf(stderr, LOG_COLOR_START "%3ld \t %20p \t %20p \t %5d \t %5d \t %5d \t %5d\n" \
+            LOG_COLOR_END, tc, eq, eq->buffer, eq->size, eq->esize, eq->in, eq->out);
+    }
+}
+
 
 
 #ifdef __cplusplus

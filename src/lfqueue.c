@@ -75,7 +75,7 @@ uint32_t lfqueuePut(struct lfqueue *queue, const void *src, uint32_t size){
     avail = lfqueueAvail(queue);
 
     if (avail == 0) {
-        dlc_info("avail %d\n", avail);
+        dlc_info("queue %p avail %d\n", queue, avail);
         return 0;
     }
 

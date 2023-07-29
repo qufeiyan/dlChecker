@@ -41,6 +41,22 @@ static __attribute__ ((unused))  eventError_t eventError = 0;
 void displayInfo(vertex_t **ssc, int *sscCount, int num);
 void clearTarjanStatus(hashMapIterator_t *iter);
 
+
+#if IS_USE_ASSERT
+#undef assert
+#define assert(expression)                            \
+do{                                                   \
+    if(!(expression)){                                \
+        dlc_err(#expression " is expected...\n");     \
+        eventQueuesInfo();                            \
+        abort();                                      \
+    }                                                 \
+}while(0)
+#else
+#define assert(expression)  (void)(expression)
+#endif
+
+
 /*
 enum eventType{
     EVENT_WAITLOCK,

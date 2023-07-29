@@ -12,11 +12,6 @@
 #include "internal.h"
 #include "lfqueue.h"
 #include "mempool.h"
-#include "stdatomic.h"   //! for c11
-
-typedef struct lfqueue eventQueue_t;
-
-typedef struct dispatcher dispatcher_t;
 
 
 static int dispatcherInvoke(dispatcher_t *dispatcher){

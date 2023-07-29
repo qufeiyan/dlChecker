@@ -205,8 +205,8 @@ void generateWaitEvent(void *arg) {
         prctl(PR_GET_NAME, (unsigned long)ev->threadInfo.name);
     #endif
     }
-    dlc_info("[%s]tid: %ld waits mid: %p tc: %ld\n", ev->threadInfo.name,
-            ev->threadInfo.tid, (void *)ev->mutexInfo.mid, dispatcher.threadCount);
+    dlc_info("[%s %ld]tid: %ld waits mid: %p\n", ev->threadInfo.name, dispatcher.threadCount,
+            ev->threadInfo.tid, (void *)ev->mutexInfo.mid);
 
     dispatcher.invoke(&dispatcher);
 }
@@ -225,7 +225,7 @@ void generateHoldEvent(void *arg) {
     ev->type = EVENT_HOLDLOCK;
     assert((size_t)mutex == ev->mutexInfo.mid);
 
-    dlc_info("[%s]tid: %ld holds mid: %p\n", ev->threadInfo.name,
+    dlc_info("[%s %ld]tid: %ld holds mid: %p\n", ev->threadInfo.name, dispatcher.threadCount,
             ev->threadInfo.tid, (void *)ev->mutexInfo.mid);
 
     dispatcher.invoke(&dispatcher);
@@ -266,8 +266,8 @@ void generateReleaseEvent(void *arg) {
         prctl(PR_GET_NAME, (unsigned long)ev->threadInfo.name);
     #endif
     }
-    dlc_info("tid: %ld release mid: %p\n", ev->threadInfo.tid,
-            (void *)ev->mutexInfo.mid);
+    dlc_info("[%s %ld]tid: %ld release mid: %p\n", ev->threadInfo.name, dispatcher.threadCount,
+        ev->threadInfo.tid, (void *)ev->mutexInfo.mid);
 
     dispatcher.invoke(&dispatcher);
 }

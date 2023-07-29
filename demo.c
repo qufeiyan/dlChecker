@@ -27,7 +27,7 @@ void* func0(void *arg){
         sleep(2);
         pthread_mutex_lock(&mid[1]);
         sleep(1);
-        pthread_mutex_lock(&mid[0]);
+        pthread_mutex_unlock(&mid[1]);
         sleep(1);
         pthread_mutex_unlock(&mid[0]);
     }
@@ -75,7 +75,7 @@ void* func3(void *arg){
         dlc_info("thread_routine 4 : %lu\n", (size_t)pthread_self());
         pthread_mutex_lock(&mid[3]);
         sleep(4);
-        pthread_mutex_lock(&mid[3]);
+        // pthread_mutex_lock(&mid[3]);
         pthread_mutex_unlock(&mid[3]);
     }
     return NULL;
@@ -88,7 +88,7 @@ void* func(void *arg){
     dlcSetTaskName(name);
     while(1)
     {
-        dlc_info("thread_routine %ld : %lu\n", i, (size_t)pthread_self());
+        // dlc_info("thread_routine %ld : %lu\n", i, (size_t)pthread_self());
         pthread_mutex_lock(&mid[i]);
         int count = 10000;
         while(count--);
