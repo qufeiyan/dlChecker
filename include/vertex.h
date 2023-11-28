@@ -60,8 +60,7 @@ struct vertex{
     };
     short indegree;
     short outdegree;
-    // arc_t *arcList;  
-    arc_t arcList;
+    arc_t *arcList;  
 
     vertexOperation_t *ops;
     char private[0];
@@ -89,6 +88,11 @@ typedef struct threadInfo threadInfo_t;
 vertex_t *vertexCreate(vertexType_t type, vertexOperation_t *ops);
 void vertexDestroy(vertexType_t type, vertex_t *vertex);
 void vertexSetInfo(vertex_t *vertex, void *info);
+
+
+arc_t *arcCreate(vertex_t *tail, arc_t *next);
+void arcDestroy(arc_t *arc);
+
 
 //! declaration for common operations.
 extern vertexOperation_t ops;

@@ -136,7 +136,7 @@ void *checker(void *arg) {
 }
 
 /**
- * @brief initialise the dlc_hecker...
+ * @brief initialise the dlchecker...
  * @param int level[in]  Set log level. [1:error 2:warn 3:info: 4:debug]
  */
 void initDeadlockChecker(int level) {

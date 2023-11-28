@@ -3,7 +3,7 @@ PREFIX =
 CC := ${PREFIX}gcc
 AR := $(PREFIX)ar
 
-ECHO_COLOR=\033[4;96m
+ECHO_COLOR=\033[4;96m·
 ECHO_COLOR_END=\033[0;m
 
 # use libtool to generate lib.
@@ -20,7 +20,7 @@ CFLAGS += -funwind-tables
 # DFLAGS += -DDLC_TEST
 LSCRIPT += -Tmem.lds
 
-CFLAGS += -fsanitize=address -Wall -Werror
+CFLAGS += -Wall -Werror
 
 # define the directory where the source codes are located.
 SRCDIR = ./src
@@ -80,7 +80,7 @@ ${TARGET} : demo.c libdlChecker.a
 	$(CC) $(LSCRIPT) $^ $(IFLAGS) $(LFLAGS) -l$(LIB_NAME) $(CFLAGS) $(DFLAGS) -o $@
 
 test : test.c libdlChecker.a 
-	$(CC) $^ $(IFLAGS) $(LFLAGS) -l$(LIB_NAME) $(CFLAGS) $(DFLAGS) -o $@
+	$(CC) $^ $(LSCRIPT) $(IFLAGS) $(LFLAGS) $(CFLAGS) $(DFLAGS) -o $@
 
 ${UNITTEST} : unitTest.c libdlChecker.a 
 	$(CC) $(LSCRIPT) $^ $(IFLAGS) $(LFLAGS) -l$(LIB_NAME) $(CFLAGS) $(DFLAGS) -o $@

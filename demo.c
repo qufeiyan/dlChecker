@@ -75,7 +75,7 @@ void* func3(void *arg){
         dlc_info("thread_routine 4 : %lu\n", (size_t)pthread_self());
         pthread_mutex_lock(&mid[3]);
         sleep(4);
-        // pthread_mutex_lock(&mid[3]);
+        pthread_mutex_lock(&mid[3]);
         pthread_mutex_unlock(&mid[3]);
     }
     return NULL;
@@ -178,7 +178,7 @@ int main(int argc, char** argv){
  
     // void* list[] = {&mid[3]};
     // dlcFilterCreate(list, 1);
-    initDeadlockChecker(3);
+    initDeadlockChecker(1);
 
     dlc_err("mid[3] %p\n", &mid[3]);
 
@@ -217,6 +217,6 @@ int main(int argc, char** argv){
         pthread_join(tid[i], NULL);
     }   
 
-    dlcFilterDestroy();
+    // dlcFilterDestroy();
     return 0;
 }

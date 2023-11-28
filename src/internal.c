@@ -20,6 +20,8 @@ hashMap_t *requestThreadMap = NULL;
 hashMap_t *vertexThreadMap = NULL;
 hashMap_t *vertexMutexMap = NULL;
 memPool_t *eventQueueMemPool = NULL, *eventQueueBufferMemPool = NULL;
+memPool_t *threadVertexMemPool = NULL, *mutexVertexMemPool = NULL;
+memPool_t *arcMemPool = NULL;
 spinlock_t eventQueueMemPoolLock = {.lock = ATOMIC_FLAG_INIT};
 spinlock_t eventQueueBufferMemPoolLock = {.lock = ATOMIC_FLAG_INIT};
 spinlock_t eventQueueMapLock = {.lock = ATOMIC_FLAG_INIT};
@@ -95,6 +97,11 @@ void memPoolAllInit(){
     if(mutexVertexMemPool == NULL){
         mutexVertexMemPool = memPoolDefine("mv", 
             NUMBER_OF_VERTEX_MUTEX, SIZE_OF_VERTEX_MUTEX);
+    }
+
+    if(arcMemPool == NULL){
+        arcMemPool = memPoolDefine("arc", 
+            NUMBER_OF_ARC, SIZE_OF_ARC);
     }
 }
 

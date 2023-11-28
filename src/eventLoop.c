@@ -257,7 +257,9 @@ void eventLoopEnter(){
  * @param   top is top of stack.
  * @param   ssc is tripule 
  */
-void tarjan(vertex_t *u, short *time, stackImpl_t *stackImpl, sscImpl_t *sscImpl, sscCountImpl_t *sscCountImpl){ 
+void tarjan(vertex_t *u, short *time, 
+            stackImpl_t *stackImpl, sscImpl_t *sscImpl, sscCountImpl_t *sscCountImpl){ 
+    vertex_t *v = NULL;
     u->dfn = u->low = ++(*time);
     assert(u->dfn == u->low);
     vertex_t **stack = stackImpl->stack;
@@ -265,18 +267,21 @@ void tarjan(vertex_t *u, short *time, stackImpl_t *stackImpl, sscImpl_t *sscImpl
     stack[++(*top)] = u;
     u->inStack = true;
 
-    vertex_t *v = u->arcList.tail;
-    if(v == NULL){
+    arc_t *head = u->arcList;
+    if(head == NULL){
         dlc_warn("u.type %d, top %d\n", u->type, *top);
         goto skip;
     }
 
-    //! only one edge.
-    if(v->dfn == 0){
-        tarjan(v, time, stackImpl, sscImpl, sscCountImpl);
-        u->low = DLC_MIN(u->low, v->low);
-    }else if(v->inStack){
-        u->low = DLC_MIN(u->low, v->dfn);
+    while(head){
+        v = head->tail;
+        if(v->dfn == 0){
+            tarjan(v, time, stackImpl, sscImpl, sscCountImpl);
+            u->low = DLC_MIN(u->low, v->low);
+        }else if(v->inStack){
+            u->low = DLC_MIN(u->low, v->dfn);
+        }
+        head = head->next;
     }
 
 skip:
@@ -346,8 +351,8 @@ void strongConnectedComponent(){
     dlc_warn("sscCount :%p sscCount[0] %d\n", sscCount, sscCount[0]);
     if(sscCount[0] > 1){
         displayInfo(ssc, sscCount, sizeof(sscCount) / sizeof(sscCount[0]));
-        extern long long start;
-        dlc_err("start %lld, resume %lld ms\n", start, (timeInMilliseconds() - start));
+        // extern long long start;
+        // dlc_err("start %lld, resume %lld ms\n", start, (timeInMilliseconds() - start));
         // abort();
     }
     clearTarjanStatus(&iter);
@@ -375,7 +380,8 @@ void displayInfo(vertex_t **ssc, int *sscCount, int num){
     for (int i = 0; i < num; ++i) {
         if(sscCount[i] != 0){
             if(sscCount[i] > 1){
-                printf("----------------find ssc %d: %d vertexs...----------------\n", i, sscCount[i]);
+                printf("----------------find ssc %d: %d vertexs...----------------\n", 
+                    i, sscCount[i]);
                 reportDeadLock(ssc, sscCount[i]); 
             } 
             ssc += sscCount[i]; 
@@ -387,6 +393,7 @@ void displayInfo(vertex_t **ssc, int *sscCount, int num){
 void clearTarjanStatus(hashMapIterator_t *iter){
     entry_t *entry;
     vertex_t *u;
+    arc_t *head;
     assert(iter);
     hashMapIteratorReset(iter);
     while((entry = hashMapNext(iter)) != NULL){  
@@ -395,10 +402,12 @@ void clearTarjanStatus(hashMapIterator_t *iter){
         u->low = 0;
         u->inStack = false;
 
-        if(u->arcList.tail){
-            u->arcList.tail->dfn = 0;
-            u->arcList.tail->low = 0;
-            u->arcList.tail->inStack = false;
+        head = u->arcList;
+        while(head){
+            head->tail->dfn = 0;
+            head->tail->low = 0;
+            head->tail->inStack = false;
+            head = head->next;
         }
     }
 }

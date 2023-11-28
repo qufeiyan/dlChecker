@@ -39,7 +39,8 @@ extern "C" {
 #define NUMBER_OF_VERTEX_THREAD         NUMBER_OF_THREAD
 #define NUMBER_OF_VERTEX_MUTEX          NUMBER_OF_THREAD
 #define NUMBER_OF_VERTEX                (NUMBER_OF_VERTEX_THREAD + NUMBER_OF_VERTEX_MUTEX)
-
+#define NUMBER_OF_ARC                   (NUMBER_OF_THREAD * 2)
+#define SIZE_OF_ARC                     (sizeof(arc_t))
 
 enum eventType{
     EVENT_WAITLOCK,
@@ -153,10 +154,27 @@ static inline eventQueue_t *eventQueueCurrent(){
     ret;\
 })
 
+#define eventQueueMapPutLocked(dispatcher, lock) ({\
+    int ret;\
+    spinlock_t *_lock = (typeof(lock))lock;\
+    assert(_lock != NULL);  \
+    _lock->acquire(_lock);  \
+    atomicThreadCounts++;   \
+    dispatcher.threadCount = atomicThreadCounts;\
+    ret = hashMapPut(eventQueueMap, (void *)dispatcher.threadCount, dispatcher.eq); \
+    _lock->release(_lock);  \
+    ret;\
+})
+
 
 
 //! get eventqueue memory frome pool.
 extern memPool_t *eventQueueMemPool, *eventQueueBufferMemPool;
+//! memory pool for vertex.
+extern memPool_t *threadVertexMemPool, *mutexVertexMemPool;
+//! memory pool for arc.
+extern memPool_t *arcMemPool;
+
 extern spinlock_t eventQueueMemPoolLock, eventQueueBufferMemPoolLock;
 extern atomic_long atomicThreadCounts;
 extern spinlock_t eventQueueMapLock;

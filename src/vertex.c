@@ -9,9 +9,10 @@
 
 /* Includes --------------------------------------------------------------------------------*/
 #include <string.h>
+#include "mempool.h"
 #include "vertex.h"
 #include "common.h"
-#include "mempool.h"
+#include "internal.h"
 
 
 /*--------------------internal methods --------------------*/
@@ -32,23 +33,56 @@ static int getOutdegree(struct vertex* ver){
 
 static void addEdge(vertex_t *u, vertex_t *v){
     assert(u && v);
-    u->arcList.tail = v;
+    
+    arc_t *head = u->arcList;
+    while(head){
+        assert(head->tail != v);
+        head = head->next;
+    }
+
+    arc_t *newArc = arcCreate(v, NULL);
+    newArc->next = u->arcList;
+    u->arcList = newArc;
 
     u->outdegree++;
+    v->indegree++;
 }
 
 static void deleteEdge(vertex_t *u, vertex_t *v){
-    arc_t *head;
+    arc_t *head, dummy = {0};
     assert(u && v);
 
     //! A thread can request only one lock at any time, 
     //！and a lock can only be occupied by one thread at any time.
     //! so, from a vertex, there is only one edge pointing to a fixed 
     //! vertex at any time. 
-    head = &u->arcList;
-    assert(head->tail == v);
-    head->tail = NULL;
+    
+    dummy.next = u->arcList;
+    head = &dummy;
+
+    //! find the arc whose tail is v.
+    while(head->next){
+        if(head->next->tail == v){
+            break;
+        }
+        head = head->next;
+    }
+
+    assert(head->next != NULL);
+
+    //! remove the edge. 
+    arc_t *target = head->next;
+    head->next = head->next->next;
+    target->next = NULL;
+    target->tail = NULL;
+    arcDestroy(target);
+    target = NULL;
+
+    u->arcList = dummy.next;
+
+    //! update the outdegree and indegree. 
     u->outdegree--;
+    v->indegree--;
 }
 
 vertexOperation_t ops = {
@@ -180,4 +214,28 @@ void vertexSetInfo(vertex_t *vertex, void *info){
     assert(vertexSetInfoImpl != NULL);
 
     vertexSetInfoImpl[vertex->type](vertex, info);
+}
+
+arc_t *arcCreate(vertex_t *tail, arc_t *next){
+    arc_t *ret;
+
+    assert(tail);
+    ret = memPoolAlloc(arcMemPool);
+    if(ret == NULL){
+        memPoolInfo(arcMemPool);
+    }
+
+    assert(ret != NULL);
+    memset(ret, 0, sizeof(arc_t));
+
+    ret->tail = tail;
+    ret->next = next;
+
+    return ret;
+}
+
+void arcDestroy(arc_t *arc){
+    assert(arc);
+
+    memPoolFree(arcMemPool, arc);
 }

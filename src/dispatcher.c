@@ -54,16 +54,20 @@ void dispatcherInit(dispatcher_t *dispatch){
         buffer = (uint8_t *)memPoolAllocLocked(eventQueueBufferMemPool, &eventQueueBufferMemPoolLock);
         eventQueueInit(dispatch->eq, buffer);
         
+        /** @brief shared variable {@code atomicThreadCounts} is in danger of concurrency.
         atomicThreadCounts++;
         dispatch->threadCount = atomicThreadCounts;
         
-        //! record the eventqueue. 
         ret = hashMapPutLocked(eventQueueMap, (void *)dispatch->threadCount, 
             dispatch->eq, &eventQueueMapLock);
+        */
+
+        //! record the eventqueue. 
+        ret = eventQueueMapPutLocked(dispatcher, &eventQueueMapLock); 
 
         //! ret == 1 means that there is no such key in the map before we put it.
         if(ret != 1){
-            dlc_info("tc %ld\n", dispatch->threadCount);
+            dlc_err("tc %ld\n", dispatch->threadCount);
         } 
         assert(ret == 1);
     }
@@ -71,9 +75,4 @@ void dispatcherInit(dispatcher_t *dispatch){
     if(dispatch->invoke == NULL){
         dispatch->invoke = dispatcherInvoke;
     }
-}
-
-
-lfqueue_t* lfqueueCurrent(){
-    return dispatcher.eq;
 }

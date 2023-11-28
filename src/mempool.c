@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include "common.h"
 #include "mempool.h"
 #include "dlcDef.h"
 #include "internal.h"
@@ -69,6 +70,7 @@ struct memPool *memPoolDefine(char* name, size_t block_count, size_t block_size)
 
     strncpy(mp->name, name, DLC_NAME_SIZE);
     mp->total_blocks = block_count;
+
     mp->block_size = MEM_ALIGN_UP(block_size, MEM_ALIGNMENT);
     mp->free_blocks = block_count;
 
@@ -165,8 +167,6 @@ void memPoolFree(struct memPool *mp, void *ptr){
     mp->avail = mp->free_blocks * mp->block_size;
     mp->used = mp->size - mp->avail;
 }
-
-struct memPool *threadVertexMemPool = NULL, *mutexVertexMemPool = NULL;
 
 void memPoolPrint(struct memPool *mp){
     if(mp == NULL) return;

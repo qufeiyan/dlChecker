@@ -24,7 +24,6 @@ memPool_t *memPoolDefine(char* name, size_t block_count, size_t block_size);
 void *memPoolAlloc(memPool_t *mp);
 void memPoolFree(memPool_t *mp, void *ptr);
 void memPoolPrint(memPool_t *mp);
-extern memPool_t *threadVertexMemPool, *mutexVertexMemPool;
 
 
 /**
@@ -71,13 +70,14 @@ extern memPool_t *threadVertexMemPool, *mutexVertexMemPool;
  * @brief   memPoolFreeLocked - macro to free a block of memory to a 
  *          memory pool.          
  * @param   mp is pointer to a memory pool.
+ * @param   ptr is pointer to a memory block.
  * @param   lock is pointer to a spinlock.
  */
-#define memPoolFreeLocked(mp, lock) ({  \
+#define memPoolFreeLocked(mp, ptr, lock) ({  \
     spinlock_t *_lock = (typeof(lock)) lock;\
     assert(_lock != NULL);  \
     _lock->acquire(_lock);  \
-    memPoolFree(mp);        \
+    memPoolFree(mp, ptr);   \
     _lock->release(_lock);  \
 })
 

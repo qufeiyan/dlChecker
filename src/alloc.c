@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "common.h"
 
 //! define the atomic operation.
 #define dlcAtomic
@@ -79,6 +80,8 @@
 #define MALLOC_MIN_SIZE(x) ((x) > 0 ? (x) : sizeof(long))
 
 static dlcAtomic size_t used_memory = 0;
+
+size_t zmalloc_used_memory(void);
 
 static void zmalloc_default_oom(size_t size) {
     fprintf(stderr, "zmalloc: Out of memory trying to allocate %zu bytes, used %lu\n",

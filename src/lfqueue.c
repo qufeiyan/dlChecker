@@ -94,7 +94,7 @@ uint32_t lfqueuePut(struct lfqueue *queue, const void *src, uint32_t size){
             (size - (queue->size - offset)) * queue->esize);
     }
 
-    // atomic_thread_fence(memory_order_release);
+    atomic_thread_fence(memory_order_release);
 
     queue->in += size;
     return size;
@@ -136,7 +136,7 @@ uint32_t lfqueueGet(struct lfqueue *queue, void *dst, uint32_t size){
             (size - (queue->size - offset)) * queue->esize);
     }
 
-    // atomic_thread_fence(memory_order_release);
+    atomic_thread_fence(memory_order_release);
 
     queue->out += size;
     return size;
