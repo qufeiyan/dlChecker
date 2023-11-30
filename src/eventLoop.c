@@ -386,7 +386,7 @@ void displayInfo(vertex_t **ssc, int *sscCount, int num){
             } 
             ssc += sscCount[i]; 
         }
-        else break;
+        else break; //! avoid ineffective iterations.
     }
 }
 

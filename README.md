@@ -1,4 +1,4 @@
-## `d`ead`l`ock `Checker`:死锁检查组件
+## `d`ead`l`ock `Checker`:死锁检测组件
 
 **中文** ｜ [English](README_EN.md)  
 
