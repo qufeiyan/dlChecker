@@ -19,6 +19,7 @@ hashMap_t *eventQueueMap = NULL;
 hashMap_t *requestThreadMap = NULL;
 hashMap_t *vertexThreadMap = NULL;
 hashMap_t *vertexMutexMap = NULL;
+hashMap_t *residentThreadMap = NULL;
 memPool_t *eventQueueMemPool = NULL, *eventQueueBufferMemPool = NULL;
 memPool_t *threadVertexMemPool = NULL, *mutexVertexMemPool = NULL;
 memPool_t *arcMemPool = NULL;
@@ -66,6 +67,11 @@ void mapAllInit(){
 
     if(vertexMutexMap == NULL){
         vertexMutexMap = (hashMap_t *)hashMapCreate(&IntegerMapType, 
+            NUMBER_OF_VERTEX_MUTEX);
+    }
+
+    if(residentThreadMap == NULL){
+        residentThreadMap = (hashMap_t *)hashMapCreate(&IntegerMapType, 
             NUMBER_OF_VERTEX_MUTEX);
     }
 }

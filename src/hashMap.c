@@ -112,13 +112,6 @@ static long _mapKeyIndex(HASH_MAP *map, const void *key, uint64_t hash, ENTRY_IN
     return idx;
 }
 
-long long timeInMilliseconds(void) {
-    struct timeval tv;
-
-    gettimeofday(&tv, NULL);
-    return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
-}
-
 /* Low level add or find:
  * This function adds the entry but instead of setting a value returns the
  * dictEntry structure to the user, that will make sure to fill the value

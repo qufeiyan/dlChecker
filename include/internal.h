@@ -18,6 +18,7 @@
 #include "spinlock.h"
 #include "vertex.h"
 #include "hashMap.h"
+#include <signal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,6 +79,18 @@ extern __thread dispatcher_t dispatcher; //! define thread local dispatcher for 
 extern hashMap_t *eventQueueMap;  //! record all eventqueue for each thread.
 extern hashMap_t *vertexThreadMap, *vertexMutexMap;
 extern hashMap_t *requestThreadMap;
+extern hashMap_t *residentThreadMap;  //! record resident threads.
+
+//! get eventqueue memory frome pool.
+extern memPool_t *eventQueueMemPool, *eventQueueBufferMemPool;
+//! memory pool for vertex.
+extern memPool_t *threadVertexMemPool, *mutexVertexMemPool;
+//! memory pool for arc.
+extern memPool_t *arcMemPool;
+
+extern spinlock_t eventQueueMemPoolLock, eventQueueBufferMemPoolLock;
+extern atomic_long atomicThreadCounts;
+extern spinlock_t eventQueueMapLock;
 
 
 static inline void hashMapIteratorInit(hashMapIterator_t *iter, hashMap_t *map){
@@ -167,23 +180,15 @@ static inline eventQueue_t *eventQueueCurrent(){
 })
 
 
-
-//! get eventqueue memory frome pool.
-extern memPool_t *eventQueueMemPool, *eventQueueBufferMemPool;
-//! memory pool for vertex.
-extern memPool_t *threadVertexMemPool, *mutexVertexMemPool;
-//! memory pool for arc.
-extern memPool_t *arcMemPool;
-
-extern spinlock_t eventQueueMemPoolLock, eventQueueBufferMemPoolLock;
-extern atomic_long atomicThreadCounts;
-extern spinlock_t eventQueueMapLock;
-
 //! initial function.
 void mapAllInit();
 void memPoolAllInit();
 void dispatcherInit(dispatcher_t *dispatch);
 long long timeInMilliseconds(void);
+
+//！garbage collection.
+typedef void (*gcCallback_t)(void *arg);
+void gcDestroyedThreads(const pid_t pid, gcCallback_t cb);
 
 #ifdef LOG_COLOR_OPEN   
 #define LOG_COLOR_START  LOG_COLOR_GREEN

@@ -1,7 +1,10 @@
 #ifndef __APPLE__
 #define _GNU_SOURCE
+#include "hashMap.h"
+#include "timer.h"
 #include <pthread.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <sys/prctl.h>
 #endif
 #include <dlfcn.h>
@@ -110,27 +113,39 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex) {
     generateReleaseEvent((void *)mutex);
     return ret;
 }
-extern long long timeInMilliseconds();
+
+void gcTimerProc(void *args);
+void checkTimerProc(void *args);
+
 void *checker(void *arg) {
-    long long now, pre, diff;
-    pre = timeInMilliseconds();
+    long long now;
 
     dlcSetTaskName("checker");
-
     usleep(100 * 1000);
+    
+    now = timeInMilliseconds();
+    //! check procedure. 
+    dlcTimerConfig_t config = {
+        .period = PERIOD_OF_DLCHECKER,
+        .whenMs = now + PERIOD_OF_DLCHECKER,
+        .timerFunc = checkTimerProc,
+        .args = NULL,
+        .cycle = TIMER_CYCLE
+    };
+    dlcTimerCreate(&config);
+
+    //! garbage collection procedure.
+    config.period = 100 * PERIOD_OF_DLCHECKER;
+    config.whenMs = now + config.period;
+    config.timerFunc = gcTimerProc;
+    config.args = NULL;
+    config.cycle = TIMER_CYCLE;
+    dlcTimerCreate(&config);
+
     while (1) {
         //! process all event.
         eventLoopEnter();
-
-        now = timeInMilliseconds();
-        diff = now - pre;
-        dlc_dbg("diff %lld\n", diff);
-        if (diff >= PERIOD_OF_DLCHECKER) {
-            strongConnectedComponent();
-            pre = now;
-        } else {
-            usleep((PERIOD_OF_DLCHECKER - diff) * 1000);
-        }
+        dlcTimerProc();
     }
     return NULL;
 }
@@ -270,4 +285,59 @@ void generateReleaseEvent(void *arg) {
         ev->threadInfo.tid, (void *)ev->mutexInfo.mid);
 
     dispatcher.invoke(&dispatcher);
+}
+
+/**
+ * @brief  traverse through all destroyed threads in the process $pid for garbage collection.
+ 
+ * @param  pid is process id of the process.
+ * @param  cb is callback to be executed.
+ */
+void gcDestroyedThreads(const pid_t pid, gcCallback_t cb){
+    FILE *file;
+    long tid;
+    hashMap_t *oldThreadMap;
+    hashMapIterator_t iter;
+    entry_t *entry;
+    char path[40];
+    assert(residentThreadMap != NULL);
+    // assert(cb != NULL);
+
+    if(hashMapSize(residentThreadMap) == 0){
+        oldThreadMap = vertexThreadMap;
+    }else {
+        oldThreadMap = residentThreadMap;
+    }
+
+    sprintf(path, "ls /proc/%d/task -l", (int)pid);
+
+    file = popen(path, "r");
+    if(NULL != file){
+        fscanf(file, "%*[^\n]%*c");
+        while(EOF != fscanf(file, "%*[^:]%*c%*d%ld\n", &tid)){
+            dlc_dbg("tid :%ld\n", tid);
+            hashMapPut(residentThreadMap, (void *)tid, NULL);
+        }
+    }
+    pclose(file);
+
+    //! obtain all threads that have been destroyed.
+    hashMapIteratorInit(&iter, oldThreadMap);
+    while((entry = hashMapNext(&iter)) != NULL){  
+        if(hashMapFind(residentThreadMap, entry->key) == NULL){
+            //! gc.
+            cb(entry->key);
+        }
+    }
+}
+
+void gcTimerProc(void *args){
+    pid_t pid = getpid();
+    (void)args;
+    gcDestroyedThreads(pid, NULL);
+}
+
+void checkTimerProc(void *args){
+    (void)args;
+    strongConnectedComponent();
 }
