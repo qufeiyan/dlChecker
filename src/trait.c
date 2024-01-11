@@ -34,6 +34,17 @@ void dlcSetTaskName(char *name) {
 #endif
 }
 
+size_t dlcGetThreadId(void){
+    size_t tid;
+    #ifdef __APPLE__
+        pthread_t selfid = pthread_self();
+    #else
+        pid_t selfid = syscall(SYS_gettid);
+    #endif 
+    tid = selfid;
+    return tid;
+}
+
 typedef int (*pthread_mutex_lock_t)(pthread_mutex_t *);
 typedef int (*pthread_mutex_unlock_t)(pthread_mutex_t *);
 pthread_mutex_lock_t pthread_mutex_lock_f;
@@ -127,7 +138,7 @@ void *checker(void *arg) {
     //! check procedure. 
     dlcTimerConfig_t config = {
         .period = PERIOD_OF_DLCHECKER,
-        .whenMs = now + PERIOD_OF_DLCHECKER,
+        .whenMs = now + config.period,
         .timerFunc = checkTimerProc,
         .args = NULL,
         .cycle = TIMER_CYCLE
@@ -195,7 +206,7 @@ void generateWaitEvent(void *arg) {
         pthread_t selfid = pthread_self();
     #else
         pid_t selfid = syscall(SYS_gettid);
-    #endif
+    #endif 
 
         ev->threadInfo.tid = (size_t)selfid;
     }
@@ -301,7 +312,7 @@ void gcDestroyedThreads(const pid_t pid, gcCallback_t cb){
     entry_t *entry;
     char path[40];
     assert(residentThreadMap != NULL);
-    // assert(cb != NULL);
+    assert(cb != NULL);
 
     if(hashMapSize(residentThreadMap) == 0){
         oldThreadMap = vertexThreadMap;
@@ -332,12 +343,13 @@ void gcDestroyedThreads(const pid_t pid, gcCallback_t cb){
 }
 
 void gcTimerProc(void *args){
+    gcCallback_t gc;
     pid_t pid = getpid();
-    (void)args;
-    gcDestroyedThreads(pid, NULL);
+    gc = (gcCallback_t)args;
+    gcDestroyedThreads(pid, gc);
 }
 
 void checkTimerProc(void *args){
-    (void)args;
-    strongConnectedComponent();
+    (void)args; 
+    strongConnectedComponent(); 
 }

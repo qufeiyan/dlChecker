@@ -65,6 +65,7 @@ struct dispatcher{
     //  *   a thread and message queue that it owns.
     //  */
     long threadCount;     //! record current thread count. 
+    size_t tid;           //! thread id.  
     eventQueue_t* eq;     //! messageQueue object for a thread.
     int (*invoke)(struct dispatcher *);     //! dispatch a thread's event to specific event queue.  
     event_t ev;           //! event to be dispatched.
@@ -112,6 +113,12 @@ static inline void hashMapIteratorInit(hashMapIterator_t *iter, hashMap_t *map){
 #define eventQueueInit(eq, buffer)({\
     assert(eq && buffer);\
     lfqueueInit(eq, buffer, NUMBER_OF_EVENT, SIZE_OF_EVENT);\
+})
+
+#define eventQueueDeInit(eq)({\
+    assert(eq && ((eventQueue_t *)eq)->buffer);\
+    memPoolFreeLocked(eventQueueBufferMemPool, eq->buffer, &eventQueueBufferMemPoolLock);\
+    memPoolFreeLocked(eventQueueMemPool, eq, &eventQueueMemPoolLock);\
 })
 
 #define eventQueuePut(eq, ev) ({\
@@ -174,11 +181,13 @@ static inline eventQueue_t *eventQueueCurrent(){
     _lock->acquire(_lock);  \
     atomicThreadCounts++;   \
     dispatcher.threadCount = atomicThreadCounts;\
-    ret = hashMapPut(eventQueueMap, (void *)dispatcher.threadCount, dispatcher.eq); \
+    ret = hashMapPut(eventQueueMap, (void *)dispatcher.tid, dispatcher.eq); \
     _lock->release(_lock);  \
     ret;\
 })
 
+//! get thread id.
+size_t dlcGetThreadId(void);
 
 //! initial function.
 void mapAllInit();

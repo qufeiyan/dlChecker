@@ -28,7 +28,7 @@ void* dine ( void* arg )
 int main ( void )
 {
    #include "interface.h" 
-   initDeadlockChecker(1);
+   initDeadlockChecker(2);
 
    long i;
    for (i = 0; i < NUMBER_OF_PHILOSOPHERS; i++)

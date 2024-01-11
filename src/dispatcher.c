@@ -27,6 +27,7 @@ static int dispatcherInvoke(dispatcher_t *dispatcher){
 
 __thread dispatcher_t dispatcher = {
     .threadCount = -1, //! -1 means current thread have not been scheduled yet. 
+    .tid = 0,
     .eq = NULL,
     .ev = {0},
     .invoke = NULL
@@ -61,6 +62,10 @@ void dispatcherInit(dispatcher_t *dispatch){
         ret = hashMapPutLocked(eventQueueMap, (void *)dispatch->threadCount, 
             dispatch->eq, &eventQueueMapLock);
         */
+
+        if(dispatch->tid == 0){
+            dispatch->tid = dlcGetThreadId();
+        }
 
         //! record the eventqueue. 
         ret = eventQueueMapPutLocked(dispatcher, &eventQueueMapLock); 

@@ -8,6 +8,7 @@
  */
 
 /* Includes --------------------------------------------------------------------------------*/
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -117,7 +118,7 @@ static void waitLockHandler(event_t *ev){
     //! record thread to request map.    
     assert(requestThreadMap != NULL);
     __unused int ret = hashMapPut(requestThreadMap, (void *)tv, (void *)1);
-    // assert(ret == 1);
+    assert(ret == 1);
 }
 
 /**
@@ -232,13 +233,18 @@ void eventHandler(event_t *ev){
 };
 
 void eventLoopEnter(){
+    hashMapIterator_t iter;
+    entry_t *entry;
     eventQueue_t *eq;
     long loops = atomicThreadCounts;
-    for (long i = 1; i <=loops; ++i) {
-        eq = (eventQueue_t *)hashMapGet(eventQueueMap, (void *)i);
+    int i = 0;
+    // dlc_warn("loops %ld\n", loops);
+    hashMapIteratorInit(&iter, eventQueueMap);
+    while((entry = hashMapNext(&iter)) != NULL){ 
+        eq = (eventQueue_t *)hashMapGet(eventQueueMap, (void *)entry->key);
         if(eq == NULL) continue;
         int num = eventQueueUsed(eq);
-        dlc_dbg("count %ld i %ld, num %d\n", loops, i, num);
+        dlc_dbg("count %ld i %d, num %d\n", loops, i, num);
         while (num > 0) {
             event_t ev;
         
@@ -312,8 +318,10 @@ void strongConnectedComponent(){
     assert(requestThreadMap != NULL);
 
     int size = hashMapSize(requestThreadMap);
-    if(size == 0) return;  //! return if there is no thread requesting lock.
-
+    if(size == 0) {
+        dlc_dbg("size == 0\n");
+        return;  //! return if there is no thread requesting lock.
+    }
     static vertex_t *stack[NUMBER_OF_VERTEX];
     static vertex_t *ssc[NUMBER_OF_VERTEX];
     static int sscCount[NUMBER_OF_VERTEX];

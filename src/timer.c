@@ -110,6 +110,7 @@ void dlcTimerProc(void){
     while(timer){
         if(timer->whenMs <= now){
             timer->timerFunc(timer->args);
+            // dlc_warn("timer period %lu\n", timer->period);
 
             if(timer->cycle == TIMER_CYCLE){
                 dlcTimerUpdate(timer);

@@ -9,10 +9,12 @@
 
 /* Includes --------------------------------------------------------------------------------*/
 #include <stdatomic.h>
+#include "hashMap.h"
 #include "internal.h"
 #include "common.h"
 #include "mempool.h"
 #include "spinlock.h"
+#include "vertex.h"
 
 
 hashMap_t *eventQueueMap = NULL;
@@ -72,7 +74,7 @@ void mapAllInit(){
 
     if(residentThreadMap == NULL){
         residentThreadMap = (hashMap_t *)hashMapCreate(&IntegerMapType, 
-            NUMBER_OF_VERTEX_MUTEX);
+            NUMBER_OF_VERTEX_THREAD);
     }
 }
 
@@ -111,12 +113,28 @@ void memPoolAllInit(){
     }
 }
 
+void gcForThread(void *args){
+    eventQueue_t *eq;
+    vertex_t *vertex;
+
+    assert(args);
+    size_t tid = (size_t)args;
+
+    //! destroy event queue.
+    eq = hashMapGet(eventQueueMap, (void *)tid);
+    if(eq){
+        eventQueueDeInit(eq);
+    }
+     
+    //! destroy vertex.  
+    vertex = hashMapGet(vertexThreadMap, (void *)tid);
+    if(vertex){
+        //! remove the vertex first.
+        hashMapRemove(vertexThreadMap, (void *)tid);
+        
+        //！ then destroy it.
+        vertexDestroy(VERTEX_THREAD, vertex);
+    }
+}
 
 
-// #include <sys/sysinfo.h>
-// int ncoresGet(){
-//     if(ncores == 0){
-//         ncores = get_nprocs();
-//     }
-//     return ncores;
-// }
