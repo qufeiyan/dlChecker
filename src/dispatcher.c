@@ -10,7 +10,6 @@
 /* Includes --------------------------------------------------------------------------------*/
 #include "common.h"
 #include "internal.h"
-#include "lfqueue.h"
 #include "mempool.h"
 
 

@@ -11,7 +11,6 @@
 #include <string.h>
 #include "mempool.h"
 #include "vertex.h"
-#include "common.h"
 #include "internal.h"
 
 

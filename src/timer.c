@@ -11,7 +11,6 @@
 
 #include <assert.h>
 #include <internal.h>
-#include <stdint.h>
 #include <unistd.h>
 #include "mem.h"
 #include "timer.h"

@@ -15,7 +15,6 @@
 #include "common.h"
 #include "dlcDef.h"
 #include "internal.h"
-#include "mempool.h"
 #include "vertex.h"
 
 typedef int eventError_t;

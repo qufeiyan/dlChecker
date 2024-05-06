@@ -11,7 +11,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "common.h"
 #include "mempool.h"
 #include "dlcDef.h"
 #include "internal.h"

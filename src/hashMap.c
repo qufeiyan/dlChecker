@@ -4,7 +4,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include "hashMap.h"
-#include "internal.h"
+#include "common.h"
 /**
  * @note A simple hash table that does not have the ability to dynamically change its size.
  * 
